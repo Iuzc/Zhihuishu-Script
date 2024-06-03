@@ -16,13 +16,16 @@ from db_answer import *
 from crawl_answer import *
 
 # 多线程global list
-videolist=[]
+videolist = []
+
+
 # global driver_state
 # driver_state = True
 class LazyChangeWorld():
     userphone = None
     userpassword = None
-    def __init__(self,userphone,userpassword):
+
+    def __init__(self, userphone, userpassword):
         self.userpassword = userpassword
         self.userphone = userphone
 
@@ -79,7 +82,7 @@ class LazyChangeWorld():
     #         print(".........更新驱动完毕.........")
     #     else:
     #         print("驱动已更新")
-    def getImg(self,url, name):
+    def getImg(self, url, name):
         '''
         向图片所在url获取图片到本地
         :param url:
@@ -91,7 +94,7 @@ class LazyChangeWorld():
             fp.write(content)
             print("获取验证码图片成功")
 
-    def getXDistance(self,bgimg_name,brokenimg_name):
+    def getXDistance(self, bgimg_name, brokenimg_name):
         '''
         获取验证滑块与缺口距离
         :param bgimg_name:
@@ -115,7 +118,8 @@ class LazyChangeWorld():
         cv2.rectangle(bg_img, tl, br, (0, 0, 255), 2)  # 绘制矩形
         cv2.imwrite('./img/out.jpg', bg_img)  # 保存在本地
         return X
-    def login(self,driver,action):
+
+    def login(self, driver, action):
         '''
         登录
         :param driver:
@@ -137,11 +141,11 @@ class LazyChangeWorld():
         login = driver.find_element(By.CLASS_NAME, "wall-sub-btn")
         login.click()
         sleep(2)
-        i = 0#变化滑动，逃逸验证
+        i = 0  # 变化滑动，逃逸验证
         while 1:
-            WebDriverWait(driver, 10, 0.5).until(EC.presence_of_element_located((By.XPATH, "/html/body/div[31]/div[2]/div/div/div[2]/div/div[1]/div/div[1]/img[1]")))
-            yidun_bg_img_url = driver.find_element(By.XPATH,"/html/body/div[31]/div[2]/div/div/div[2]/div/div[1]/div/div[1]/img[1]").get_attribute("src")
-            yidun_jigsaw_url = driver.find_element(By.XPATH, "/html/body/div[31]/div[2]/div/div/div[2]/div/div[1]/div/div[1]/img[2]").get_attribute("src")
+            WebDriverWait(driver, 10, 0.5).until(EC.presence_of_element_located((By.XPATH, "/html/body/div[32]/div[2]/div/div/div[2]/div/div[1]/div/div[1]/img[1]")))
+            yidun_bg_img_url = driver.find_element(By.XPATH, "/html/body/div[32]/div[2]/div/div/div[2]/div/div[1]/div/div[1]/img[1]").get_attribute( "src")
+            yidun_jigsaw_url = driver.find_element(By.XPATH, "/html/body/div[32]/div[2]/div/div/div[2]/div/div[1]/div/div[1]/img[2]").get_attribute("src")
             bg_img_name = "./img/bgimg_src.jpg"
             broken_img_name = "./img/brokenimg_src.jpg"
             self.getImg(yidun_bg_img_url, bg_img_name)
@@ -155,10 +159,10 @@ class LazyChangeWorld():
             # # 第二步：相对鼠标当前位置进行移动
 
             if i == 0:
-                action.move_by_offset(move_x+10, 0)
+                action.move_by_offset(move_x + 10, 0)
                 i = 1
             else:
-                action.move_by_offset(move_x / 3 , 0)
+                action.move_by_offset(move_x / 3, 0)
                 action.move_by_offset(move_x / 3, 0)
                 action.move_by_offset(move_x / 3 + 10, 0)
                 i = 0
@@ -167,10 +171,13 @@ class LazyChangeWorld():
             # # 执行动作
             action.perform()
             sleep(3)
-            if self.checkElement(driver, By.XPATH, "/html/body/div[31]/div[2]/div/div/div[2]/div/div[1]/div/div[1]/img[1]") is False:
+            if self.checkElement(driver, By.XPATH,
+                                 "/html/body/div[31]/div[2]/div/div/div[2]/div/div[1]/div/div[1]/img[1]") is False:
                 print("滑块验证码通过！")
                 break
-        WebDriverWait(driver, 10, 0.5).until(EC.presence_of_element_located((By.XPATH, "//*[@id='sharingClassed']/div[2]/ul/div/dl/dt/div[1]/div[1]")))
+        WebDriverWait(driver, 10, 0.5).until(
+            EC.presence_of_element_located((By.XPATH, "//*[@id='sharingClassed']/div[2]/ul/div/dl/dt/div[1]/div[1]")))
+
     def videoAction(self, driver):
         '''
         播放视频行为链
@@ -185,11 +192,11 @@ class LazyChangeWorld():
             # 当前时长
             WebDriverWait(driver, 10, 0.5).until(EC.presence_of_element_located((By.CLASS_NAME, "currentTime")))
             currentTime = driver.find_element(By.CLASS_NAME, "currentTime").text
-            print("currentTime:",currentTime)
+            print("currentTime:", currentTime)
             if (currentTime >= duration):
                 print("播放完毕")
                 break
-            if(t == currentTime):
+            if (t == currentTime):
                 print("视频暂停")
                 self.videoQuestion(driver)
                 # 继续播放
@@ -199,7 +206,8 @@ class LazyChangeWorld():
                     videoArea.click()
                 except Exception as e:
                     print('element <div class="v-modal v-modal-leave"> obscures')
-                    WebDriverWait(driver, 20, 0.5).until_not(EC.presence_of_element_located((By.CSS_SELECTOR, 'div.v-modal.v-modal-leave')))
+                    WebDriverWait(driver, 20, 0.5).until_not(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, 'div.v-modal.v-modal-leave')))
                     videoArea.click()
                 # 执行JavaScript脚本点击元素
                 # script = "document.getElementsByClassName('videoArea')[0].click();"
@@ -213,7 +221,7 @@ class LazyChangeWorld():
             js = "document.getElementsByClassName('controlsBar')[0].style.display='block'"
             driver.execute_script(js)
             sleep(0.5)
-            box_right = driver.find_element(By.CLASS_NAME,"box-right")
+            box_right = driver.find_element(By.CLASS_NAME, "box-right")
             ActionChains(driver).move_to_element(box_right)
             # 检测间隔时间
             sleep(5)
@@ -258,9 +266,9 @@ class LazyChangeWorld():
         '''
         try:
             sleep(1)
-            driver.find_element(by,path)
+            driver.find_element(by, path)
             return True
-        except :
+        except:
             return False
 
     def videoQuestion(self, driver):
@@ -274,7 +282,7 @@ class LazyChangeWorld():
         right_list = driver.find_elements(By.CLASS_NAME, "topic-item")
 
         try:
-            for j,i in enumerate(right_list):
+            for j, i in enumerate(right_list):
                 if j == 0:
                     print("答题弹出")
                     print("开始答题")
@@ -286,7 +294,7 @@ class LazyChangeWorld():
                     break
                 error_class = 'iconfont.iconcuowu1'
                 print("查找错误标签")
-                if(self.checkElement(driver, By.CLASS_NAME, error_class)):
+                if (self.checkElement(driver, By.CLASS_NAME, error_class)):
                     print("当前答题错误")
                 i.click()
                 sleep(2)
@@ -300,6 +308,7 @@ class LazyChangeWorld():
             sleep(1)
         except Exception:
             pass
+
     def videoPageInit(self, driver):
         '''
         视频页面跳转初始化操作,关闭答题界面、广告
@@ -311,7 +320,7 @@ class LazyChangeWorld():
             self.videoQuestion(driver)
         # 取消广告界面
         sleep(2)
-        if(self.checkElement(driver, By.CLASS_NAME, "iconfont.iconguanbi")):
+        if (self.checkElement(driver, By.CLASS_NAME, "iconfont.iconguanbi")):
             # 这里必须抛出异常，经过检验，广告弹窗元素一直处于界面中，
             # 只不过被display:none隐藏起来，若不弹出，能查找到，但不能点击则会报错
             try:
@@ -323,7 +332,8 @@ class LazyChangeWorld():
             except Exception:
                 pass
             print("广告关闭")
-    def seprateNum(self,N, threadcount):
+
+    def seprateNum(self, N, threadcount):
         '''
         划分线程区间
         :param N:
@@ -346,6 +356,7 @@ class LazyChangeWorld():
         s = (left, right)
         selist.append(s)
         return selist
+
     def videolistThread(self, percent_elements, numlist):
         '''
         检查在numlist区间视频列表是否观看，初始化videolist
@@ -354,30 +365,29 @@ class LazyChangeWorld():
         :return:
         '''
         t = numlist[0]
-        for percent_element in percent_elements :
-            video_text_xpath = percent_element.find_element(By.CLASS_NAME,'catalogue_title')
+        for percent_element in percent_elements:
+            video_text_xpath = percent_element.find_element(By.CLASS_NAME, 'catalogue_title')
             # 打印当前元素名称
             video_text = video_text_xpath.text
             global videolist
-            if(self.checkElement(percent_element,By.CSS_SELECTOR,"b.fl.time_icofinish")):
+            if (self.checkElement(percent_element, By.CSS_SELECTOR, "b.fl.time_icofinish")):
                 video = {
-                    'index':t,
-                    'name':video_text,
-                    'isStudies':1
+                    'index': t,
+                    'name': video_text,
+                    'isStudies': 1
                 }
                 videolist.append(video)
-                print(video_text_xpath.text+"已经观看完毕")
+                print(video_text_xpath.text + "已经观看完毕")
             else:
                 video = {
                     'index': t,
-                    'name':video_text,
+                    'name': video_text,
                     'isStudies': 0
                 }
                 videolist.append(video)
-                print(video_text_xpath.text+"未观看完毕")
+                print(video_text_xpath.text + "未观看完毕")
             print(video)
             t = t + 1
-
 
     def addDb(self, db, list):
         '''
@@ -388,6 +398,7 @@ class LazyChangeWorld():
         '''
         for item in list:
             db.addItem(item=item)
+
     # 爬取章节名称
     def videolistInit(self, driver, db_mysql):
         '''
@@ -396,11 +407,11 @@ class LazyChangeWorld():
         :param db_mysql:
         :return:
         '''
-        percent_elements = driver.find_elements(By.CLASS_NAME,'clearfix.video')
+        percent_elements = driver.find_elements(By.CLASS_NAME, 'clearfix.video')
         n = len(percent_elements)
-        print("n : "+str(n))
+        print("n : " + str(n))
         threadcount = 10
-        numlist = self.seprateNum(n,threadcount)
+        numlist = self.seprateNum(n, threadcount)
         print(numlist)
         global videolist
         threads = []
@@ -428,25 +439,26 @@ class LazyChangeWorld():
         '''
         print("开始做本章单元测试")
         sleep(1)
-        WebDriverWait(driver, 10, 0.5).until(EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div/div[2]/div[1]/div/h1')))
+        WebDriverWait(driver, 10, 0.5).until(
+            EC.presence_of_element_located((By.XPATH, '//*[@id="app"]/div/div[2]/div[1]/div/h1')))
         answer_choose = {
-            "A":0,
-            "B":1,
-            "C":2,
-            "D":3,
-            "E":4,
-            "F":5,
-            "G":6,
+            "A": 0,
+            "B": 1,
+            "C": 2,
+            "D": 3,
+            "E": 4,
+            "F": 5,
+            "G": 6,
         }
-        #判断题转换
-        judge_dict={
+        # 判断题转换
+        judge_dict = {
             "√": "对",
             "X": "错"
         }
-        chapter = driver.find_element(By.XPATH,'//*[@id="app"]/div/div[2]/div[1]/div/h1')
+        chapter = driver.find_element(By.XPATH, '//*[@id="app"]/div/div[2]/div[1]/div/h1')
         chapter_text = chapter.text
         print("单元章节 : " + chapter_text)
-        chapter_text = chapter_text.replace("测试","")
+        chapter_text = chapter_text.replace("测试", "")
         # 总答案
         answers = db_answer.selectAll(chapter_text)
         print(answers)
@@ -456,17 +468,17 @@ class LazyChangeWorld():
         # requestions = driver.find_element(By.XPATH,'//*[@id="app"]/div/div[2]/div[2]/div[2]/div[1]/ul/li[2]/span')
         # requestions = requestions.text
         # 页面中总选项父节点
-        choose_targets_xpath = driver.find_elements(By.CLASS_NAME,'subject_node')
+        choose_targets_xpath = driver.find_elements(By.CLASS_NAME, 'subject_node')
         # 页面中总题目类型节点
-        subject_types = driver.find_elements(By.CLASS_NAME,"subject_type")
-        #记录做题数
+        subject_types = driver.find_elements(By.CLASS_NAME, "subject_type")
+        # 记录做题数
         record = 0
-        for (index,answer) in enumerate(answers):
-            record=index
+        for (index, answer) in enumerate(answers):
+            record = index
             # 题目类型标签
-            subject_type = subject_types[index].find_element(By.XPATH,'.//span[1]')
+            subject_type = subject_types[index].find_element(By.XPATH, './/span[1]')
             type_text = subject_type.text
-            print("type_text : "+type_text)
+            print("type_text : " + type_text)
             choose_targets = choose_targets_xpath[index].find_elements(By.CLASS_NAME, "label.clearfix")
             # 多选题
             if ("多选" in type_text):
@@ -483,15 +495,15 @@ class LazyChangeWorld():
                         choose = choose_target.find_element(By.XPATH, ".//div[2]")
                         choose = choose.text
                         print("选项为 : " + choose_target.text)
-                        if(choose in answer):
+                        if (choose in answer):
                             choose_target.click()
                             print("多选选中")
             # 单选题
             else:
                 if '√' in answer or 'X' in answer:
-                    answer=judge_dict[answer]
+                    answer = judge_dict[answer]
                 for choose_target in choose_targets:
-                    choose = choose_target.find_element(By.XPATH,".//div[2]")
+                    choose = choose_target.find_element(By.XPATH, ".//div[2]")
                     choose = choose.text
                     print("选项为 : " + choose)
                     print("答案为 : " + answer)
@@ -501,22 +513,21 @@ class LazyChangeWorld():
                         break
                     sleep(1)
             # 下一题的选项
-            next_button = driver.find_element(By.XPATH,'//*[@id="app"]/div/div[2]/div[2]/div[3]/button[2]')
+            next_button = driver.find_element(By.XPATH, '//*[@id="app"]/div/div[2]/div[2]/div[3]/button[2]')
             next_button.click()
             sleep(0.5)
-        print(chapter.text+"已经做完")
+        print(chapter.text + "已经做完")
         if record >= 5:
-            submit = driver.find_element(By.XPATH,'//*[@id="app"]/div/div[2]/div[1]/div/div/button[1]')
+            submit = driver.find_element(By.XPATH, '//*[@id="app"]/div/div[2]/div[1]/div/div/button[1]')
             submit.click()
             sleep(0.5)
-            WebDriverWait(driver, 10, 0.5).until(EC.presence_of_element_located((By.XPATH, '//div[@aria-label="提示"]/div/div[3]/button[2]')))
-            confirm=driver.find_element(By.XPATH,'//div[@aria-label="提示"]/div/div[3]/button[2]')
+            WebDriverWait(driver, 10, 0.5).until(
+                EC.presence_of_element_located((By.XPATH, '//div[@aria-label="提示"]/div/div[3]/button[2]')))
+            confirm = driver.find_element(By.XPATH, '//div[@aria-label="提示"]/div/div[3]/button[2]')
             confirm.click()
             sleep(2)
 
-
-
-    def main(self,is_watch,is_dotest,name="",mode=0):
+    def main(self, is_watch, is_dotest, name="", mode=0):
         '''
         行为链全流程
         :param is_watch: 是否观看
@@ -553,14 +564,16 @@ class LazyChangeWorld():
                 print(e)
                 messagebox.showerror(title="出现异常", message="登录失败！请检查手机号与密码是否正确！")
                 return
-            for i in range(1,100):
+            for i in range(1, 100):
                 # print(f'//*[@id="sharingClassed"]/div[2]/ul[{i}]/div/dl/dt/div[1]/div[1]')
-                if self.checkElement(driver, By.XPATH, f'//*[@id="sharingClassed"]/div[2]/ul[{i}]/div/dl/dt/div[1]/div[1]'):
-                    coursename_element = driver.find_element(By.XPATH, f'//*[@id="sharingClassed"]/div[2]/ul[{i}]/div/dl/dt/div[1]/div[1]')
+                if self.checkElement(driver, By.XPATH,
+                                     f'//*[@id="sharingClassed"]/div[2]/ul[{i}]/div/dl/dt/div[1]/div[1]'):
+                    coursename_element = driver.find_element(By.XPATH,
+                                                             f'//*[@id="sharingClassed"]/div[2]/ul[{i}]/div/dl/dt/div[1]/div[1]')
                     coursename = coursename_element.text
                     print(f"该用户第{i}个课程为：{coursename}")
-                    if coursename==name:
-                        print("选中课程：",coursename)
+                    if coursename == name:
+                        print("选中课程：", coursename)
                         # 初始化Course.db
                         table_name = 'user_' + self.userphone + '_' + name
                         db_course = Course(table_name)
@@ -576,10 +589,11 @@ class LazyChangeWorld():
                         # 关闭浏览器
                         driver.quit()
                         break
-                    print("未找到课程："+name)
-                    coursename_element = driver.find_element(By.XPATH, '//*[@id="sharingClassed"]/div[2]/ul[1]/div/dl/dt/div[1]/div[1]')
+                    print("未找到课程：" + name)
+                    coursename_element = driver.find_element(By.XPATH,
+                                                             '//*[@id="sharingClassed"]/div[2]/ul[1]/div/dl/dt/div[1]/div[1]')
                     coursename = coursename_element.text
-                    print("选择默认课程：",coursename)
+                    print("选择默认课程：", coursename)
                     table_name = 'user_' + self.userphone + '_' + coursename
                     db_course = Course(table_name)
                     # 初始化Answer.db
@@ -599,10 +613,10 @@ class LazyChangeWorld():
                     videolist = db_course.selectAll()
                 self.videoPageInit(driver)
                 video_elements = driver.find_elements(By.CLASS_NAME, 'clearfix.video')
-                print("视频数量 : "+str(len(video_elements)))
-                for (i,item) in enumerate(video_elements):
+                print("视频数量 : " + str(len(video_elements)))
+                for (i, item) in enumerate(video_elements):
                     if (db_course.findById(i)["isStudies"] == int(1)):
-                        print(str(i) +"号视频" + db_course.findById(i)["name"] + "已经看过")
+                        print(str(i) + "号视频" + db_course.findById(i)["name"] + "已经看过")
                         continue
                     # 点击当前需要看的界面
                     print("当前观看网课名称:" + db_course.findById(i)["name"])
@@ -623,7 +637,7 @@ class LazyChangeWorld():
             if (is_dotest):
                 self.videoPageInit(driver)
                 print("开始做测试")
-                if(db_answer.checkTableEmpty()):
+                if (db_answer.checkTableEmpty()):
                     answerlist = crawl_answer.getAnswer(mode=mode);
                     self.addDb(db_answer, answerlist)
                 test_elements = driver.find_elements(By.CLASS_NAME, 'chapter-test')
@@ -632,7 +646,8 @@ class LazyChangeWorld():
                     sleep(0.5)
                     if (self.checkElement(driver, By.XPATH, '//*[@id="app"]/div/div[7]/div/div[3]/span/button[2]')):
                         print("当前测试已经做过")
-                        cancle_test = driver.find_element(By.XPATH, '//*[@id="app"]/div/div[7]/div/div[3]/span/button[2]')
+                        cancle_test = driver.find_element(By.XPATH,
+                                                          '//*[@id="app"]/div/div[7]/div/div[3]/span/button[2]')
                         cancle_test.click()
                         continue
                     sleep(2.5)
@@ -653,16 +668,11 @@ class LazyChangeWorld():
             return
         except Exception as e:
             print(e)
-            messagebox.showerror(title="出现异常",message="1、请尝试重新启动\n2、请手动登录检查验证码是否手动点击！\n3、检查网速是否过慢\n4、请检查是否挂载在VPN")
+            messagebox.showerror(title="出现异常", message="1、请尝试重新启动\n2、请手动登录检查验证码是否手动点击！\n3、检查网速是否过慢\n4、请检查是否挂载在VPN")
             return
-#测试
+
+
+# 测试
 if __name__ == "__main__":
-    auto = LazyChangeWorld("手机号","密码")
-    auto.main(0,1)
-
-
-
-
-
-
-
+    auto = LazyChangeWorld("手机号", "密码")
+    auto.main(0, 1)
